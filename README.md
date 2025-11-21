@@ -10,69 +10,98 @@
 
 # PROGRAM: 
 ```
-# Install dependencies if not already available
-!pip install scipy matplotlib
+# ==============================
+# AUDIO DFT ANALYSIS IN COLAB
+# ==============================
 
-import numpy as np
-import matplotlib.pyplot as plt
-from scipy.io import wavfile
+# Step 1: Install required packages
+!pip install -q librosa soundfile
+
+# Step 2: Upload audio file
 from google.colab import files
+uploaded = files.upload()   # choose your .wav / .mp3 / .flac file
+filename = next(iter(uploaded.keys()))
+print("Uploaded:", filename)
 
-# Step 1: Upload audio file
-print("Please upload a .wav file")
-uploaded = files.upload()
+# Step 3: Load audio
+import librosa, librosa.display
+import numpy as np
+import soundfile as sf
 
-filename = list(uploaded.keys())[0]  # Get uploaded filename
-fs, data = wavfile.read(filename)    # Read audio
-print("Sampling Frequency:", fs)
+y, sr = librosa.load(filename, sr=None, mono=True)  # keep original sample rate
+duration = len(y) / sr
+print(f"Sample rate = {sr} Hz, duration = {duration:.2f} s, samples = {len(y)}")
 
-# If stereo, convert to mono
-if data.ndim > 1:
-    data = data[:, 0]
+# Step 4: Play audio
+from IPython.display import Audio, display
+display(Audio(y, rate=sr))
 
-# Step 2: Compute FFT
-N = len(data)
-freq = np.fft.fftfreq(N, 1/fs)
-spectrum = np.fft.fft(data)
+# Step 5: Full FFT (DFT) analysis
+import matplotlib.pyplot as plt
 
-# Step 3: Filter - remove frequencies above 3000 Hz
-cutoff = 3000
-spectrum_filtered = spectrum.copy()
-spectrum_filtered[np.abs(freq) > cutoff] = 0
+n_fft = 2**14   # choose large power of 2 for smoother spectrum
+Y = np.fft.rfft(y, n=n_fft)
+freqs = np.fft.rfftfreq(n_fft, 1/sr)
+magnitude = np.abs(Y)
 
-# Step 4: Reconstruct signal (Inverse FFT)
-filtered_data = np.fft.ifft(spectrum_filtered).real.astype(np.int16)
-
-# Step 5: Save filtered audio
-output_filename = "filtered_audio.wav"
-wavfile.write(output_filename, fs, filtered_data)
-
-# Download filtered file
-files.download(output_filename)
-
-# Step 6: Plot spectrum before and after filtering
-plt.figure(figsize=(12,6))
-
-plt.subplot(2,1,1)
-plt.title("Original Signal Spectrum")
-plt.plot(freq[:N//2], np.abs(spectrum[:N//2]))
+plt.figure(figsize=(12,4))
+plt.plot(freqs, magnitude)
+plt.xlim(0, sr/2)
 plt.xlabel("Frequency (Hz)")
 plt.ylabel("Magnitude")
-
-plt.subplot(2,1,2)
-plt.title("Filtered Signal Spectrum")
-plt.plot(freq[:N//2], np.abs(spectrum_filtered[:N//2]))
-plt.xlabel("Frequency (Hz)")
-plt.ylabel("Magnitude")
-
-plt.tight_layout()
+plt.title("FFT Magnitude Spectrum (linear scale)")
+plt.grid(True)
 plt.show()
+
+plt.figure(figsize=(12,4))
+plt.semilogy(freqs, magnitude+1e-12)
+plt.xlim(0, sr/2)
+plt.xlabel("Frequency (Hz)")
+plt.ylabel("Magnitude (log scale)")
+plt.title("FFT Magnitude Spectrum (log scale)")
+plt.grid(True)
+plt.show()
+
+# Step 6: Top 10 dominant frequencies
+N = 10
+idx = np.argsort(magnitude)[-N:][::-1]
+print("\nTop 10 Dominant Frequencies:")
+for i, k in enumerate(idx):
+    print(f"{i+1:2d}. {freqs[k]:8.2f} Hz  (Magnitude = {magnitude[k]:.2e})")
+
+# Step 7: Spectrogram (STFT)
+n_fft = 2048
+hop_length = n_fft // 4
+D = librosa.stft(y, n_fft=n_fft, hop_length=hop_length, window='hann')
+S_db = librosa.amplitude_to_db(np.abs(D), ref=np.max)
+
+plt.figure(figsize=(12,5))
+librosa.display.specshow(S_db, sr=sr, hop_length=hop_length,
+                         x_axis='time', y_axis='hz')
+plt.colorbar(format="%+2.0f dB")
+plt.title("Spectrogram (dB)")
+plt.ylim(0, sr/2)
+plt.show()
+
 ```
 
+# AUDIO USED:
+[good-morning-242169.mp3](https://github.com/user-attachments/files/23680389/good-morning-242169.mp3)
+
+
+
 # OUTPUT: 
-<img width="1188" height="590" alt="image" src="https://github.com/user-attachments/assets/8b79230d-e44f-45a6-a100-799132953441" />
+<img width="988" height="393" alt="image" src="https://github.com/user-attachments/assets/7c79da2c-34c6-4af0-8262-3613aa0a56fb" />  
+<img width="1012" height="393" alt="image" src="https://github.com/user-attachments/assets/182db797-b378-4793-8536-3eb105bea2ab" /> 
+<img width="427" height="271" alt="{F65DA7B9-F276-4F9F-8C1B-821CCE0D0010}" src="https://github.com/user-attachments/assets/2a777a3b-5818-437e-8025-06e3840032c6" /> 
+<img width="958" height="470" alt="image" src="https://github.com/user-attachments/assets/10346a68-fe3e-4991-b523-dd6fff7534b9" />
 
 
 
-# RESULTS
-Hence ANALYSIS OF DFT WITH AUDIO SIGNAL is done successfully.
+
+
+
+
+
+# RESULTS 
+Hence the audio signal is analyzed using DFT
