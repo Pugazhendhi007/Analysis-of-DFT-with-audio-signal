@@ -91,10 +91,10 @@ plt.show()
 
 
 # OUTPUT: 
-<img width="988" height="393" alt="image" src="https://github.com/user-attachments/assets/7c79da2c-34c6-4af0-8262-3613aa0a56fb" />  
-<img width="1012" height="393" alt="image" src="https://github.com/user-attachments/assets/182db797-b378-4793-8536-3eb105bea2ab" /> 
-<img width="427" height="271" alt="{F65DA7B9-F276-4F9F-8C1B-821CCE0D0010}" src="https://github.com/user-attachments/assets/2a777a3b-5818-437e-8025-06e3840032c6" /> 
-<img width="958" height="470" alt="image" src="https://github.com/user-attachments/assets/10346a68-fe3e-4991-b523-dd6fff7534b9" />
+<img width="1010" height="393" alt="image" src="https://github.com/user-attachments/assets/9bbaa54b-735f-4768-862b-cb7055726760" />
+<img width="1012" height="393" alt="image" src="https://github.com/user-attachments/assets/cf034e00-95bb-4a0f-9135-384957891b90" />
+<img width="406" height="244" alt="Screenshot 2025-11-21 220656" src="https://github.com/user-attachments/assets/cfc20a27-410d-42b3-8fa8-c5d4c1662215" />
+<img width="958" height="470" alt="image" src="https://github.com/user-attachments/assets/2f406b11-4074-4b98-acfb-2e2120e933d3" />
 
 
 
